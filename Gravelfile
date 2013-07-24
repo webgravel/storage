@@ -1,0 +1,6 @@
+name: gravel-storage
+requires: gravel-node gravel-common gravel-common-ssl
+requires-apt: rsync
+
+symlinks:
+- [mastercommand.py, /gravel/pkg/gravel-node/command.d/storage]

@@ -1,0 +1,47 @@
+#!/usr/bin/env python2.7
+# -*- mode: python -*-
+import sys
+import argparse
+
+sys.path.append('/gravel/pkg/gravel-common')
+
+import graveldb
+import cmd_util
+
+DB_PATH = '/gravel/system/node'
+STORAGE_PATH = '/grave/storage'
+MINUID = 10000
+GID = 100
+
+class FileBox(graveldb.Table('fileboxes', DB_PATH)):
+    default = dict(uid=None)
+
+    def validate(self):
+        if self.data.uid <= MINUID:
+            raise OSError('uid should be > %d' % MINUID)
+
+def action_new():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name')
+    parser.add_argument('--uid', type=int, required=True)
+    args = parser.parse_args()
+
+    with FileBox.table:
+        box = FileBox(name=args.name)
+        if box.exists:
+            raise KeyError('already exists')
+        box.data.uid = args.uid
+        box.validate()
+
+        uid = box.data.uid
+        check_if_valid_path_entry(name)
+        path = STORAGE_PATH + '/' + name
+        if not os.path.exists(path):
+            os.makedirs(path)
+        os.chown(path, uid, GID)
+        os.chmod(path, 0o700)
+
+        box.save()
+
+if __name__ == '__main__':
+    cmd_util.main_multiple_action(globals())
