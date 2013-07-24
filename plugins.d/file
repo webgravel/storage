@@ -2,6 +2,7 @@
 # -*- mode: python -*-
 import sys
 import argparse
+import os
 
 sys.path.append('/gravel/pkg/gravel-common')
 
@@ -18,7 +19,8 @@ class FileBox(graveldb.Table('fileboxes', DB_PATH)):
 
     def validate(self):
         if self.data.uid <= MINUID:
-            raise OSError('uid should be > %d' % MINUID)
+            raise OSError('uid should be > %d (not %s)' % (
+                MINUID, self.data.uid))
 
 def action_new():
     parser = argparse.ArgumentParser()
@@ -34,8 +36,8 @@ def action_new():
         box.validate()
 
         uid = box.data.uid
-        check_if_valid_path_entry(name)
-        path = STORAGE_PATH + '/' + name
+        cmd_util.check_if_valid_path_entry(box.name)
+        path = STORAGE_PATH + '/' + box.name
         if not os.path.exists(path):
             os.makedirs(path)
         os.chown(path, uid, GID)
