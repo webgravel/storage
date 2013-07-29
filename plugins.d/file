@@ -10,7 +10,7 @@ import graveldb
 import cmd_util
 
 DB_PATH = '/gravel/system/node'
-STORAGE_PATH = '/grave/storage'
+STORAGE_PATH = '/gravel/storage'
 MINUID = 10000
 GID = 100
 
